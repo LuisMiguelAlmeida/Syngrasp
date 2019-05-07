@@ -56,7 +56,7 @@ grid on
  
 hand = SGaddFtipContact(hand,1,1:5);
  
-[hand,object] = SGmakeObject(hand); 
+[hand,object] = wwwwwwwwwwwwwwwwwwwwwwww(hand); 
  
 SGplotObject(object);
 
