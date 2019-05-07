@@ -42,7 +42,7 @@ function varargout = Syngrasp_GUI(varargin)
 
 % Edit the above text to modify the response to help Syngrasp_GUI
 
-% Last Modified by GUIDE v2.5 01-Jul-2013 22:04:24
+% Last Modified by GUIDE v2.5 03-May-2019 17:40:39
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -2774,4 +2774,54 @@ function edit_plus_5_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+    
+
+
+% --- Executes on button press in GraspwithSynergies.
+function GraspwithSynergies_Callback(hObject, eventdata, handles)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Star grasp closehand
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+disp (handles.hand.type)
+switch handles.hand.type
+    case 'Paradigmatic'
+        active=[0 1 1 0 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1 1 ]';
+    case '3Fingered'
+        active=[1 1 0 1 1 0 1 1]';
+    case 'DLR'
+        active=[0 1 1 0 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1 1 ]';
+    case 'Modular'
+        active= [1 1 1 1 1 1 1 1 1];
+    case 'VizzyHand'
+        active= 0.05*[1 1 1];
+        n_syn = 3;
+        
+end
+
+enableGUI(handles,false)
+handles.obj 
+[handles.hand,handles.obj] = SGcloseHandWithSynergies(handles.hand,handles.obj,active, n_syn);   
+handles.obj
+guidata(handles.output,handles);
+%refresh print
+SGGUIplothand(handles);
+handles.obj
+SGGUIplotobject (handles);
+updateAll(handles)
+
+set(findall(handles.uipanel1, '-property', 'enable'), 'enable', 'on');
+set(findall(handles.export3, '-property', 'enable'), 'enable', 'on');
+set(findall(handles.uipanel3, '-property', 'enable'), 'enable', 'on');
+set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'on');
+set(findall(handles.grasp_panel, '-property', 'enable'), 'enable', 'on');
+if(~isfield(handles.obj,'G'))
+    set(findall(handles.button_quality, '-property', 'enable'), 'enable','off');
+end
+
+if (isempty(handles.hand.J))
+    set(findall(handles.uipanel14, '-property', 'enable'), 'enable', 'off');
+else
+    set(findall(handles.uipanel14, '-property', 'enable'), 'enable', 'on');
 end
