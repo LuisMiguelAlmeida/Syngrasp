@@ -25,7 +25,7 @@ hand = SGaddFtipContact(hand,1,1:4);
 SGplotObject(object);
 Syngrasp_GUI
 delta_zr = [0 1 0 0]';
-variation = SGquasistatic(hand,object,delta_zr);
+variation = SGquasSGquasistaticistatic(hand,object,delta_zr);
 
 linMap = SGquasistaticMaps(hand,object);
 
