@@ -8,7 +8,8 @@
 %    Arguments:
 %    cp = the matrix containing the contac points locations
 %    ob = the center coordinates of the object to grasp
-%   
+%    References:
+%    http://www.centropiaggio.unipi.it/sites/default/files/grasp-RAS94.pdf
 %
 %    See also: SGjacobianMatrix, SGselectionMatrix, SGgraspMatrix
 
