@@ -16,3 +16,5 @@ for j = 1:(size(finger.joints,2) - 1)
        cp_mat = [cp_mat; j alpha];
     end
 end
+
+end

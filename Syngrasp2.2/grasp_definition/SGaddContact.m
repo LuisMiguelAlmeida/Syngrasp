@@ -36,7 +36,7 @@
 %        notice, this list of conditions and the following disclaimer in the
 %        documentation and/or other materials provided with the distribution.
 %      * Neither the name of the <organization> nor the
-%        names of its contributors may be used to endorse or promote products
+%        names of its contr ibutors may be used to endorse or promote products
 %        derived from this software without specific prior written permission.
 % 
 %  THIS SOFTWARE IS PROVIDED BY M. Malvezzi, G. Gioioso, G. Salvietti, D.
@@ -130,7 +130,7 @@ function newHand = SGaddContact(hand,type,cwhere,link,alpha)
         newHand.cp(:,ncp+1) = newContact';        
     end
        
-    newHand.Jtilde = SGjacobianMatrix(newHand);
+    newHand.Jtilde = SGjacobianMatrixV2(newHand);
     
  
     

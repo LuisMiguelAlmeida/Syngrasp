@@ -5,9 +5,9 @@ clc
 hand = VizzyHandModel;
 
 [qm, S] = SGsantelloSynergies;
-S=S(1:12, 1:10); 
+S=S(1:13, 1:10); 
 hand = SGdefineSynergies(hand,S(:,1:4),qm); 
-qm = qm(1:12);
+qm = qm(1:13);
 figure(1)
 SGplotHand(hand);
 hand = SGmoveHand(hand,qm);
@@ -23,9 +23,9 @@ hand = SGaddFtipContact(hand,1,1:4);
 [hand,object] = SGmakeObject(hand); 
  
 SGplotObject(object);
-Syngrasp_GUI
+%Syngrasp_GUI
 delta_zr = [0 1 0 0]';
-variation = SGquasSGquasistaticistatic(hand,object,delta_zr);
+variation = SGquasistatic(hand,object,delta_zr);
 
 linMap = SGquasistaticMaps(hand,object);
 

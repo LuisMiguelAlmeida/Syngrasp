@@ -59,8 +59,10 @@ for i = 1:hand.n
     m = m + F{i}.n;
 end
 
-hand.m=m;          % number of degrees of freedom of the hand
-
+hand.m=m+1;          % number of degrees of freedom of the hand 
+hand.q = 0;        % Wrist joint
+hand.qin = 0;      % Wrist joint
+hand.qinf = 0;     % Wrist joint
 for i = 1: hand.n    
     hand.q =[hand.q ; F{i}.q];
     qin = i*ones(size(F{i}.q));  

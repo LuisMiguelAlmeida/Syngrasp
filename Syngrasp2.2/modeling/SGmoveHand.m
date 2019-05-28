@@ -79,7 +79,7 @@ function newHand = SGmoveHand(hand,q)
     
     end
     
-	k = 1;
+	k = 2;
 	for i=1:hand.n
         F_old = hand.F{i};
         DHpars = F_old.DHpars;
@@ -98,8 +98,12 @@ function newHand = SGmoveHand(hand,q)
 	tmp_cp = hand.cp;
 	newHand.cp = [];
 
-	for i = 1:size(tmp_cp,2)    
-        newHand = SGaddContact(newHand,tmp_cp(7,i),tmp_cp(4,i),tmp_cp(5,i),tmp_cp(6,i));
+	for i = 1:size(tmp_cp,2)
+        if (tmp_cp(5,i) == 0) % Palm contact point
+            newHand = SGaddPalmContact(newHand,tmp_cp(7,i),tmp_cp(4,i),tmp_cp(6,i));
+        else % Finger contact point
+            newHand = SGaddContact(newHand,tmp_cp(7,i),tmp_cp(4,i),tmp_cp(5,i),tmp_cp(6,i));
+        end
 	end
         
 	newHand = SGjoints(newHand);

@@ -509,7 +509,7 @@ if(strcmp(obj_selected,'None')==0)
             c=SGcontactDetection(handles.hand,handles.obj,i);
             contact = [contact; c];
         end
-        if isempty(contact)
+%        if isempty(contact)
             hold off
             SGGUIplothand(handles)
             hold on
@@ -520,11 +520,11 @@ if(strcmp(obj_selected,'None')==0)
                 set(findall(handles.button_quality, '-property', 'enable'), 'enable','off');
             end
 
-        else
-            disp('Cannot place the object in the desired position');
-            h = msgbox('Cannot place the object in the desired position','WARNING','warn');
-            return
-        end
+%         else
+%             disp('Cannot place the object in the desired position');
+%             h = msgbox('Cannot place the object in the desired position','WARNING','warn');
+%             return
+%         end
 else
     reset_object(handles);
     set(findall(handles.grasp_panel, '-property', 'enable'), 'enable', 'off');
@@ -2795,7 +2795,7 @@ switch handles.hand.type
     case 'Modular'
         active= [1 1 1 1 1 1 1 1 1];
     case 'VizzyHand'
-        active= 0.05*[1 1 1];
+        active= 0.0087*[1 1 1];
         n_syn = 3;
         
 end

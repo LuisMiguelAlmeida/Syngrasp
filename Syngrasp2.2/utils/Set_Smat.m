@@ -101,5 +101,9 @@ function [S, So] = Set_Smat(angles, mode)
             end
             
     end
+    
+    % Add the fixed wrist joint
+    S= [zeros(1,3); S];
+    So = [0 ; So];
 end
 

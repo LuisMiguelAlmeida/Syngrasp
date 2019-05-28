@@ -4,7 +4,7 @@ final_pose = 0;
 
 hand.syn = zeros(n_syn,1); % Define all synergies to zero
 activeSynergies = ones(n_syn,1); % All synergy fingers are ative
-[hand.S hand.So] = Set_Smat(hand.syn, 'actuator'); % Define synergy matrix
+[hand.S, hand.So] = Set_Smat(hand.syn, 'actuator'); % Define synergy matrix
 
 
 if (isscalar(synergies))
@@ -68,6 +68,21 @@ while (final_pose == 0 && count <= max_iter)
     end
     
     count = count +1;
+    
+end
+
+% determine if object is in contact with hand's palm
+% (this is done by seing if there is some contact in the metacarpal bone)
+alpha = NaN;
+wrs_org = zeros(3, 1); % Wrist origin
+
+for i=1:4 % for each finger
+    link_seg = SGsegment(wrs_org, hand.F{i}.base(1:3,4));    
+    [alpha] = SGlinkIntersection(link_seg,obj);
+    if ~isnan(alpha)    
+       hand = SGaddPalmContact(hand,1,i,alpha);
+       disp('hello')
+    end
     
 end
 
