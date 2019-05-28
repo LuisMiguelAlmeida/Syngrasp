@@ -60,5 +60,5 @@ for i=1:nc
 end
 
 new_hand.cp = [hand.cp(:,1:index-1) hand.cp(:,index+1:nc)];
-newHand.Jtilde = SGjacobianMatrix(hand);
+newHand.Jtilde = SGjacobianMatrixV2(hand);
 

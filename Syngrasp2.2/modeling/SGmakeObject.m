@@ -112,7 +112,7 @@ function [newHand,object] = SGmakeObject(hand,center,normals)
     [object.Gtilde,object.G] = SGgraspMatrix(object);
     object.type = 'auto';
     newHand.H = object.H;
-    newHand.Jtilde = SGjacobianMatrix(newHand);
+    newHand.Jtilde = SGjacobianMatrixV2(newHand);
     newHand.J = newHand.H * newHand.Jtilde;
     newHand.JS = newHand.J * newHand.S;
 end
