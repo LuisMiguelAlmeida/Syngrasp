@@ -81,7 +81,6 @@ for i=1:4 % for each finger
     [alpha] = SGlinkIntersection(link_seg,obj);
     if ~isnan(alpha)    
        hand = SGaddPalmContact(hand,1,i,alpha);
-       disp('hello')
     end
     
 end

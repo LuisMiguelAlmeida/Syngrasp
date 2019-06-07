@@ -3,7 +3,7 @@ function cp_mat = SGcontactDetection(hand,struct,i)
 
 finger = hand.F{1,i};
 
-cp_mat = []
+cp_mat = [];
 
 for j = 1:(size(finger.joints,2) - 1)
     alpha = NaN;    

@@ -7,6 +7,7 @@
 %
 %    Arguments:
 %    hand = the hand structure on which the contact points lie
+%    object = the object structure where the contact points lie
 %    finger = the finger on which the contact point lies
 %    link = the link where the contact point lies
 %    alpha = an argument that parameterize the position of the contact
@@ -48,7 +49,7 @@
 %  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 %  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-function [new_hand] = SGremoveContact(hand,finger,link,alpha)
+function [new_hand, object] = SGremoveContact(hand,object,finger,link,alpha)
 
 new_hand = hand;
 index = 0;
@@ -60,5 +61,7 @@ for i=1:nc
 end
 
 new_hand.cp = [hand.cp(:,1:index-1) hand.cp(:,index+1:nc)];
+object.normals = [object.normals(:,1:index-1) object.normals(:,index+1:nc)];
+object.cp = [object.cp(:,1:index-1) object.cp(:,index+1:nc)];
 newHand.Jtilde = SGjacobianMatrixV2(hand);
 

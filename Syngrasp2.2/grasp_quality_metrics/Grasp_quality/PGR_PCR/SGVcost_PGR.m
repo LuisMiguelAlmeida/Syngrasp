@@ -14,7 +14,7 @@
 %    vector
 %    pG =  grasp matrix pseudoniverse
 %    E = matrix of controllable internal forces of the analyzed hand
-%    n = number of contact points
+%    n = normals of contact points
 %    mu = friction coefficent
 %    fmin = minimum normal force
 %    fmax = maximum normal force
