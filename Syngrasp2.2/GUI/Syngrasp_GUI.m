@@ -42,7 +42,7 @@ function varargout = Syngrasp_GUI(varargin)
 
 % Edit the above text to modify the response to help Syngrasp_GUI
 
-% Last Modified by GUIDE v2.5 03-May-2019 17:40:39
+% Last Modified by GUIDE v2.5 04-Jun-2019 16:00:36
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -242,6 +242,7 @@ set(handles.control_hand,'Visible','off');
         set(findall(handles.hand_rotz, '-property', 'enable'), 'enable', 'off');
                 %set(findall(handles.button_place_hand, '-property', 'enable'), 'enable', 'off');
 set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'off');
+set(findall(handles.cp_panel, '-property', 'enable'), 'enable', 'off');
 set(findall(handles.grasp_panel, '-property', 'enable'), 'enable', 'off');
 
 
@@ -250,8 +251,9 @@ set(findall(handles.grasp_panel, '-property', 'enable'), 'enable', 'off');
 handles.z=zeros(1,20);
 handles.step_degree=5;
 handles.radio='radio_joint';
+handles.radio_cp='radio_cp_finger';
 handles.radio_grasp='radio_closeall';
-handles.grasp_quality_panel='mev';
+handles.grasp_quality_panel='PCR';
 handles.grasp_numbers=1;
 set(handles.grasp_quality,'String','0');
 
@@ -331,16 +333,16 @@ side=handles.obj_data.side;
 set(handles.object_x,'String',num2str(x));
 set(handles.object_y,'String',num2str(y));
 set(handles.object_z,'String',num2str(z));
-set(handles.object_rotx,'String',num2str(rad2deg(theta)));
-set(handles.object_roty,'String',num2str(rad2deg(phi)));
-set(handles.object_rotz,'String',num2str(rad2deg(psi)));
+set(handles.object_rotx,'String',num2str(theta));
+set(handles.object_roty,'String',num2str(phi));
+set(handles.object_rotz,'String',num2str(psi));
 set(handles.obj_rad,'String',num2str(rad));
 set(handles.obj_height,'String',num2str(height));
 set(handles.obj_side,'String',num2str(side));
 
 [az, el]=view;
 if(isfield(handles,'obj'))
-    SGplotSolid(handles.obj)
+    SGplotSolid(handles.obj);
 end
 view(az,el);
 colormap([0 0 1])
@@ -400,7 +402,7 @@ end
 enableGUI(handles,false)
 handles.obj
 [handles.hand,handles.obj] = SGcloseHand(handles.hand,handles.obj,active,0.1);   
-handles.obj
+%handles.obj
 guidata(handles.output,handles);
 %refresh print
 SGGUIplothand(handles);
@@ -412,6 +414,7 @@ set(findall(handles.uipanel1, '-property', 'enable'), 'enable', 'on');
 set(findall(handles.export3, '-property', 'enable'), 'enable', 'on');
 set(findall(handles.uipanel3, '-property', 'enable'), 'enable', 'on');
 set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'on');
+set(findall(handles.cp_panel, '-property', 'enable'), 'enable', 'on');
 set(findall(handles.grasp_panel, '-property', 'enable'), 'enable', 'on');
 if(~isfield(handles.obj,'G'))
     set(findall(handles.button_quality, '-property', 'enable'), 'enable','off');
@@ -432,7 +435,17 @@ function button_quality_Callback(hObject, eventdata, handles)
 hand=handles.hand;
 object=handles.obj;
 switch handles.grasp_quality_panel
+        case 'PCR' % for underactuated hand
+            Quality = SG_PCR(hand, object);    
+        case 'PGRbruteforce' 
+            [Quality, PCR, combopt] = SG_PGRbruteforce(hand, object);
+        case 'PGRh1' 
+            [Quality, PCR, combopt] = SG_PGRh1(hand, object);
+        case 'PGRh2' 
+            kg=3; % Number of points that must be attached to the object
+            [Quality, PCR, combopt]=SG_PGRh2(hand,object,kg);
         case 'mev'
+            disp('mev');
             Quality = SGmanipEllipsoidVolume(object.G,hand.J);
         case 'gii'
             Quality = SGgraspIsotropyIndex(object.G);
@@ -578,10 +591,18 @@ function select_method_Callback(hObject, eventdata, handles)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Select quality grasp_quality_panel                                                     %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-contents = cellstr(get(handles.select_object,'String')) ;
-method_selected=contents{get(handles.select_object,'Value')};
+contents = cellstr(get(handles.select_method,'String')) ;
+method_selected=contents{get(handles.select_method,'Value')};
 
 switch method_selected
+    case 'PCR'
+        handles.grasp_quality_panel='PCR';
+    case 'PGR Brute Force'
+        handles.grasp_quality_panel='PGRbruteforce';
+    case 'PGR Heuristic 1'
+        handles.grasp_quality_panel='PGRh1';
+    case 'PGR Heuristic 2'
+        handles.grasp_quality_panel='PGRh2';
     case 'Manipolability Ellisoid Volume'
         handles.grasp_quality_panel='mev';
     case 'Grasp Isotropy Index'
@@ -628,7 +649,7 @@ function control_hand_SelectionChangeFcn(hObject, eventdata, handles)
 contents = cellstr(get(handles.select_hand,'String'));
 hand_selected=contents{get(handles.select_hand,'Value')};
 handles.radio=get(eventdata.NewValue,'tag');
-[m,n]=size(handles.hand.S);
+[m,n]=size(	handles.hand.S);
 % set the right value for slider [min,max,slider_step] when switch to
 % synergies/joint mode
 step_deg=handles.step_degree/(2*180);
@@ -642,7 +663,8 @@ switch handles.radio
                 hold on
                 SGGUIplotobject(handles); 
     case 'radio_synergies'
-                        handles.hand.q=handles.hand.qm;
+                %handles.hand.q=handles.hand.qm;
+                handles.hand.q= zeros(length(handles.hand.q),1);
 
                 hold off
                 SGGUIplothand(handles);
@@ -662,9 +684,9 @@ for i = 1:5
                               
             case 'radio_synergies'
 
-                eval([ 'set(handles.slider_finger_', num2str(i), '_', num2str(j) ,',''Min'',-2);'])
-                eval([ 'set(handles.slider_finger_', num2str(i), '_', num2str(j) ,',''Max'',2);'])
-                eval([ 'set(handles.slider_finger_', num2str(i), '_', num2str(j) ,',''SliderStep'',[step_rad,0.1]);'])
+                eval([ 'set(handles.slider_finger_', num2str(i), '_', num2str(j) ,',''Min'',0);'])
+                eval([ 'set(handles.slider_finger_', num2str(i), '_', num2str(j) ,',''Max'',3.14);'])
+                eval([ 'set(handles.slider_finger_', num2str(i), '_', num2str(j) ,',''SliderStep'',[step_rad,0.06]);'])
                 
         end
     end
@@ -752,7 +774,7 @@ if onoff
 
    
          set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'on');
-
+         set(findall(handles.cp_panel, '-property', 'enable'), 'enable', 'on');
 
     set(findall(handles.uipanel3, '-property', 'enable'), 'enable', 'on');
     set(findall(handles.uipanel4, '-property', 'enable'), 'enable', 'on');
@@ -762,6 +784,7 @@ else
     set(findall(handles.grasp_panel, '-property', 'enable'), 'enable', 'off');
     set(findall(handles.uipanel1, '-property', 'enable'), 'enable', 'off');
     set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'off');
+    set(findall(handles.cp_panel, '-property', 'enable'), 'enable', 'off');
     set(findall(handles.uipanel3, '-property', 'enable'), 'enable', 'off');
     set(findall(handles.uipanel4, '-property', 'enable'), 'enable', 'off');
     set(findall(handles.export3, '-property', 'enable'), 'enable', 'off');
@@ -962,6 +985,11 @@ switch radio
     case 'radio_synergies'
         q=checkValues(q,3.14);
         if(isfield(handles,'obj'))
+            if(strcmp(handles.hand_data.type, 'VizzyHandModel'))
+                [S, So] = Set_Smat(handles.z, 'actuator');
+                handles.hand.S = S;
+                handles.hand.qm = So;
+            end
             [handles.hand,handles.obj]=SGblockingContactDetectionSyn(handles.hand,handles.obj,handles.z);
             if ~(handles.hand.q == q)
                 set(hObject,'Value',str2double(old_z_syn))
@@ -976,6 +1004,11 @@ switch radio
                 synergies_update(handles,hand_selected,column,row)
             end
         else
+                if(strcmp(handles.hand_data.type, 'VizzyHandModel'))
+                    [S, So] = Set_Smat(handles.z, 'actuator'); % Update Synergy matrix
+                    handles.hand.S = S;
+                    handles.hand.qm = So;
+                end
                 q=S*(handles.z)'+handles.hand.qm;
                 synergies_update(handles,hand_selected,column,row)
             
@@ -1190,6 +1223,7 @@ else
     
 end
 set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'on');
+set(findall(handles.cp_panel, '-property', 'enable'), 'enable', 'on');
         %set(findall(handles.button_place_object, '-property', 'enable'), 'enable', 'off');
 
 set(findall(handles.object_x, '-property', 'enable'), 'enable', 'off');
@@ -1351,6 +1385,7 @@ else
 
                 else
                     set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'off');
+                    set(findall(handles.cp_panel, '-property', 'enable'), 'enable', 'off');
                      disp('The variable selected is not a valid hand: miss field ''q''')
                      return
                 end
@@ -1420,8 +1455,14 @@ else
 end
 try
 % set the size of z containing the synergies paramethers
+    if(strcmp(handles.hand_data.type, 'VizzyHandModel'))
+        [hand.S, hand.qm] = Set_Smat(hand.q, 'joints');
+        handles.hand.S = hand.S;
+        handles.hand.qm = hand.qm;
+    end
     [rows,columns]=size(hand.S);
     handles.z=zeros(1,columns);
+    
 catch
     disp('Empty hand')
 end
@@ -2795,7 +2836,7 @@ switch handles.hand.type
     case 'Modular'
         active= [1 1 1 1 1 1 1 1 1];
     case 'VizzyHand'
-        active= 0.0087*[1 1 1];
+        active= 10*0.0087*[1 1 1]; % 0.5 º = 0.0087 rad
         n_syn = 3;
         
 end
@@ -2815,6 +2856,7 @@ set(findall(handles.uipanel1, '-property', 'enable'), 'enable', 'on');
 set(findall(handles.export3, '-property', 'enable'), 'enable', 'on');
 set(findall(handles.uipanel3, '-property', 'enable'), 'enable', 'on');
 set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'on');
+set(findall(handles.cp_panel, '-property', 'enable'), 'enable', 'on');
 set(findall(handles.grasp_panel, '-property', 'enable'), 'enable', 'on');
 if(~isfield(handles.obj,'G'))
     set(findall(handles.button_quality, '-property', 'enable'), 'enable','off');
@@ -2825,3 +2867,65 @@ if (isempty(handles.hand.J))
 else
     set(findall(handles.uipanel14, '-property', 'enable'), 'enable', 'on');
 end
+
+
+% --- Executes when selected object is changed in radio_cp.
+function radio_cp_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in radio_cp 
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.radio_cp=get(eventdata.NewValue,'tag');
+radio_cp=handles.radio_cp;
+
+switch radio_cp
+    case 'radio_cp_finger'
+        set(handles.link_text,'Visible','on');
+        set(handles.cp_link,'Visible','on');
+    case 'radio_cp_palm'
+        set(handles.link_text,'Visible','off');
+        set(handles.cp_link,'Visible','off');
+end
+guidata(handles.output,handles)
+
+% Adds contact point on the hand
+function pushbutton_addCP_Callback(hObject, eventdata, handles)
+
+type = str2double(get(handles.cp_type,'String'));
+finger = str2double(get(handles.cp_finger,'String'));
+alpha = str2double(get(handles.cp_alpha,'String'));
+
+     switch handles.radio_cp
+         case 'radio_cp_finger'
+            link = str2double(get(handles.cp_link,'String'));
+            try
+                handles.hand =  SGaddContact(handles.hand,type,finger,link,alpha);
+            catch
+                msgbox(sprintf('Invalid contact point\n Some field is incorrectly filled!'));
+            end
+            set(handles.cp_link,'String',0);
+         case 'radio_cp_palm'
+            try
+             handles.hand = SGaddPalmContact(handles.hand,type,finger,alpha);
+            catch
+                msgbox(sprintf('Invalid contact point\n Some field is incorrectly filled!'));
+            end
+     end
+     set(handles.cp_type,'String',0);
+     set(handles.cp_finger,'String',0);
+     set(handles.cp_alpha,'String',0);
+     
+guidata(handles.output,handles)
+
+
+% --- Executes on button press in create_object.
+function create_object_Callback(hObject, eventdata, handles)
+% hObject    handle to create_object (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+[handles.hand,handles.obj] = SGmakeObject(handles.hand);
+hold on;
+SGplotObject(handles.obj);
+
+set(findall(handles.uipanel14, '-property', 'enable'), 'enable', 'on');
+guidata(handles.output,handles)
