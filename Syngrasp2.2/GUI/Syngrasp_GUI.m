@@ -437,8 +437,10 @@ object=handles.obj;
 switch handles.grasp_quality_panel
         case 'PCR' % for underactuated hand
             Quality = SG_PCR(hand, object);    
-        case 'PGRbruteforce' 
+        case 'PGRbruteforce'
+            s1=tic;
             [Quality, PCR, combopt] = SG_PGRbruteforce(hand, object);
+            e1= toc(s1)
         case 'PGRh1' 
             [Quality, PCR, combopt] = SG_PGRh1(hand, object);
         case 'PGRh2' 
@@ -2899,6 +2901,8 @@ alpha = str2double(get(handles.cp_alpha,'String'));
             link = str2double(get(handles.cp_link,'String'));
             try
                 handles.hand =  SGaddContact(handles.hand,type,finger,link,alpha);
+                hold on;
+                SGplotContactPoints(handles.hand,30,'o');
             catch
                 msgbox(sprintf('Invalid contact point\n Some field is incorrectly filled!'));
             end
@@ -2906,6 +2910,8 @@ alpha = str2double(get(handles.cp_alpha,'String'));
          case 'radio_cp_palm'
             try
              handles.hand = SGaddPalmContact(handles.hand,type,finger,alpha);
+             hold on;
+             SGplotContactPoints(handles.hand,30,'o');
             catch
                 msgbox(sprintf('Invalid contact point\n Some field is incorrectly filled!'));
             end
