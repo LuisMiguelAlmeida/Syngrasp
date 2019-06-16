@@ -89,23 +89,22 @@ end
 Comb=permn([1 2 3],nc_comb);
 n_Comb = size(Comb,1); % Number of combinations
 
-% Pre-allocating memory: Speeds problem
-combination(1:n_Comb) = ...
-    struct('num',zeros(1, nc0),'nc',nc0,'hand',hand0,'object',object0,...
-        'flag1',zeros(1,nc0),'flag2',zeros(1,nc0),'flag3',zeros(1,nc0),'yopt',[]);
+
 % Pre-allocation of quality_vector
 quality_vector = zeros(1, n_Comb);
 
+% Pre-allocation of one matrix where each column represents the state that
+% the contact point is and each line represents one combination possible.
+cp_states = zeros(n_Comb,nc0);
 
 for i=1:n_Comb
-    combination(i).num=[];
     j = 1;
     for h=1:nc0 % Loop on the contact points
             if flag(h)==0
-                combination(i).num(h)=Comb(i,j);
+                cp_states(i,h) = Comb(i,j);
                 j = j+1;
             else
-                combination(i).num(h)=2;
+                cp_states(i,h) = 2;
             end
     end   
 end
@@ -125,20 +124,24 @@ end
 %     end
 %     
 
-for i=1:size(combination,2)
+for i=1:n_Comb
     
     ccol=1; crow=1; Ks=[];
 
+    % Pre-allocating memory: Speeds problem
+    combination = ...
+        struct('num',cp_states(i,:),'nc',nc0,'hand',hand0,'object',object0,...
+        'flag1',zeros(1,nc0),'flag2',zeros(1,nc0),'flag3',zeros(1,nc0),'yopt',[]);
     for j = 1:nc0  %% Loop on the contact points
 
-            if (combination(i).num(j)==1)     % State 1
+            if (combination.num(j)==1)     % State 1
                 Kis=diag([Kx(j), Ky(j),Kn(j)]);
-                combination(i).flag1(j)=1;
+                combination.flag1(j)=1;
 
-            elseif (combination(i).num(j)==2) % State 2
+            elseif (combination.num(j)==2) % State 2
                % Kis=diag([0 0 Kn(j)]);
                Kis=Kn(j);
-               combination(i).flag2(j)=1;
+               combination.flag2(j)=1;
 
             else                  % State 3
                 %Kis=diag([0 0 0]);
@@ -148,10 +151,10 @@ for i=1:size(combination,2)
                 %%%%% removed accordingly to the initial configuration of the contact points.
                 %SGremoveContact(hand,finger,link,alpha)
                 % Remove
-                [combination(i).hand, combination(i).object] = SGremoveContact(combination(i).hand,combination(i).object, cp(4,j),cp(5,j),cp(6,j));
+                [combination.hand, combination.object] = SGremoveContact(combination.hand,combination.object, cp(4,j),cp(5,j),cp(6,j));
 
-                combination(i).nc=combination(i).nc-1;
-                %combination(i).flag3(j)=1; % In the j-th comnella comb i, il contatto j si stacca
+                combination.nc=combination.nc-1;
+                %combination.flag3(j)=1; % In the j-th comnella comb i, il contatto j si stacca
             end
             [rh,ch]=size(Kis);
             Ks(crow:crow+rh-1, ccol:ccol+ch-1)=Kis;
@@ -162,44 +165,44 @@ for i=1:size(combination,2)
 
     % There is no contact point on the object
     % PCR is zero and moves on to the next iteration
-    if(combination(i).nc == 0)
+    if(combination.nc == 0)
         continue;
     end
-    [combination(i).hand, combination(i).object] = SGmakeObject(combination(i).hand,combination(i).object.center,combination(i).object.normals);
+    [combination.hand, combination.object] = SGmakeObject(combination.hand,combination.object.center,combination.object.normals);
 
-    combination(i).S=SelectionMatrix(combination(i));
+    combination.S=SelectionMatrix(combination);
 
-    combination(i).K=Ks;  % N.B. Simplifying hypothesis
+    combination.K=Ks;  % N.B. Simplifying hypothesis
 
     % K=inv(inv(Ks)+J*inv(Kp)*J'); % Equivalent Contact Stiffness
 
     % Multiplication of matrix G with S:
-    if all(size(combination(i).S))
-        combination(i).object.G = combination(i).object.G*combination(i).S; % GS
-        combination(i).hand.J = combination(i).S'*combination(i).hand.J; % JS
+    if all(size(combination.S))
+        combination.object.G = combination.object.G*combination.S; % GS
+        combination.hand.J = combination.S'*combination.hand.J; % JS
 
         % Check if the grasp is feasible
-        kerKG=ker(combination(i).K*combination(i).object.G');
+        kerKG=ker(combination.K*combination.object.G');
         if size(kerKG,2)==1
             if  kerKG==zeros(size(kerKG,1),1)
-                combination(i).object = SGcontactStiffness(combination(i).object,combination(i).K); % associate the global stiffness matrix to the object
+                combination.object = SGcontactStiffness(combination.object,combination.K); % associate the global stiffness matrix to the object
 
-                Gkr=combination(i).object.Kc*combination(i).object.G'*inv(combination(i).object.G*combination(i).object.Kc*combination(i).object.G');
+                Gkr=combination.object.Kc*combination.object.G'*inv(combination.object.G*combination.object.Kc*combination.object.G');
 
-                linMap = SGquasistaticMaps_PGR(combination(i).hand,combination(i).object); 
+                linMap = SGquasistaticMaps_PGR(combination.hand,combination.object); 
 
-                combination(i).E = ima(linMap.P); % basis for the controllable internal forces
-                ncont = size(combination(i).E,2);
+                combination.E = ima(linMap.P); % basis for the controllable internal forces
+                ncont = size(combination.E,2);
                 y0 = 0.5*ones(ncont,1);
 
-                [~,cost_val] = fminsearch(@(y) SGVcost_PGR(w,y,Gkr,combination(i).E,combination(i).object.normals,mu,fmin,fmax,k,combination(i)),y0,option); % I search for the "best" y 
+                [~,cost_val] = fminsearch(@(y) SGVcost_PGR(w,y,Gkr,combination.E,combination.object.normals,mu,fmin,fmax,k,combination),y0,option); % I search for the "best" y 
 
                 quality_vector(i)=1/cost_val;
-                %combination(i).yopt=yopt;
+                %combination.yopt=yopt;
             end
         end
     % else % Goes here when S is empty, i.e. when there isn't any contact
-        %GS=combination(i).object.G; 
+        %GS=combination.object.G; 
         
     end
 
@@ -207,7 +210,7 @@ end
     
 [PGR, I]=max(quality_vector);
 
-combopt(1,:)=combination(I).num; % Save combinations 
+combopt(1,:)=cp_states(I,:); % Save combinations 
 
 
 %sim_time=toc;
