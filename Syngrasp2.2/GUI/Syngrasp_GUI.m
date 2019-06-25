@@ -1,3 +1,4 @@
+
 %    SGSyngrasp_GUI
 %    Graphic User Interface for SynGrasp (Synergy Grasping Toolbox)
 %    Copyright (c) 2013 J. Acquarelli,D. Conti,G. Gioioso
@@ -727,6 +728,10 @@ switch handles.radio
         end
     case 'radio_synergies'
         disp('Synergies Joint Control Mode');
+        handles.hand.cp = [];
+        if isfield(handles,'obj')
+            handles.obj.cp = [];
+        end
         handles.qold=handles.hand.q;
         handles.z=zeros(1,n);
         for i = 1:5
@@ -956,14 +961,14 @@ i=0;
             case 'radio_joint'
                 if row<4
 
-                            q((row+1)+(column-1)*4)=get(hObject,'Value');
+                    q((row+1)+(column-1)*4)=get(hObject,'Value');
 
                     i=(row+1)+(column-1)*4;
                 else
                     plus_index=20+column;
                     i=plus_index;
 
-                            q(plus_index)=get(hObject,'Value');
+                    q(plus_index)=get(hObject,'Value');
 
                 end
             case 'radio_synergies'
@@ -992,7 +997,9 @@ switch radio
                 handles.hand.S = S;
                 handles.hand.qm = So;
             end
-            [handles.hand,handles.obj]=SGblockingContactDetectionSyn(handles.hand,handles.obj,handles.z);
+            
+
+            [handles.hand,handles.obj] = SGblockingContactDetectionSyn(handles.hand,handles.obj,handles.z);
             if ~(handles.hand.q == q)
                 set(hObject,'Value',str2double(old_z_syn))
                 if row<4
@@ -2838,14 +2845,17 @@ switch handles.hand.type
     case 'Modular'
         active= [1 1 1 1 1 1 1 1 1];
     case 'VizzyHand'
-        active= 10*0.0087*[1 1 1]; % 0.5 º = 0.0087 rad
+        active= 90*0.0087*[1 1 1]; % 0.5 º = 0.0087 rad
         n_syn = 3;
         
 end
 
 enableGUI(handles,false)
 handles.obj 
-[handles.hand,handles.obj] = SGcloseHandWithSynergies(handles.hand,handles.obj,active, n_syn);   
+%[handles.hand,handles.obj] = SGcloseHandWithSynergies(handles.hand,handles.obj,active, n_syn);
+tic
+[handles.hand,handles.obj] = SGcloseHandWithSynergiesV2(handles.hand,handles.obj, active, 3);  
+toc
 handles.obj
 guidata(handles.output,handles);
 %refresh print
