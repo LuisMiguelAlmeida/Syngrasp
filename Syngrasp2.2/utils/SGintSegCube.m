@@ -5,6 +5,8 @@ function alpha = SGintSegCube(seg,cube)
 
 %V=[cube.faces.f1,cube.faces.f2,cube.faces.f3,cube.faces.f4,cube.faces.f5,cube.faces.f6]; % F is a 3-by-24 matrix
 
+ep = 1e-3; % Margin of error of cube's face postion
+
 V = [];
 
 for i=1:6
@@ -63,7 +65,7 @@ for k=1:length(alphaVect)
         X_tmp = P_tilde(1);
         Y_tmp = P_tilde(2);
         Z_tmp = P_tilde(3);
-        if ((X_tmp >= min(V_tilde(1,:))) && (X_tmp <= max(V_tilde(1,:))) && (Y_tmp >= min(V_tilde(2,:))) && (Y_tmp <= max(V_tilde(2,:))) && (Z_tmp >= min(V_tilde(3,:))) && (Z_tmp <= max(V_tilde(3,:))))
+        if ((X_tmp >= min(V_tilde(1,:))-ep) && (X_tmp <= max(V_tilde(1,:))+ep) && (Y_tmp >= min(V_tilde(2,:))-ep) && (Y_tmp <= max(V_tilde(2,:))+ep) && (Z_tmp >= min(V_tilde(3,:))-ep) && (Z_tmp <= max(V_tilde(3,:))+ep))
             alphaVect(k) = alpha;
         else
             alphaVect(k) = NaN;
