@@ -12,6 +12,7 @@ zlabel('z')
 for i = 1:6
     fill3(cube.faces.ver{i}(1,:),cube.faces.ver{i}(2,:),cube.faces.ver{i}(3,:),'r')
 end
+%alpha(.5)
 % fill3(cube.faces.f1(1,:),cube.faces.f1(2,:),cube.faces.f1(3,:),'y')
 % fill3(cube.faces.f2(1,:),cube.faces.f2(2,:),cube.faces.f2(3,:),'m')
 % fill3(cube.faces.f3(1,:),cube.faces.f3(2,:),cube.faces.f3(3,:),'c')
