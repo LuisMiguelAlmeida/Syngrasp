@@ -1,11 +1,17 @@
 function [PCR,PGR_BF, PGR_H1, PGR_H2] = Plot1Hand_Object(hand, obj, titl, n_attached, n_fig)
     % Plot the hand and an object with PCR, PGR brute force, H1 and H2
+    
+    PCR = 0;PGR_BF = 0;PGR_H1 = 0;PGR_H2 = 0;
+    
+    if ~isfield(hand, 'cp') || ~isfield(obj, 'cp')
+        %error('No contact points');
+        return;% No contact points
+    end
+        
     if nargin == 5
         figure(n_fig);
     end
-    
-    PCR = 0;PGR_BF = 0;PGR_H1 = 0;PGR_H2 = 0;
-        
+    view(1,8);
     hold on;
     SGplotHand(hand);
     hold on;

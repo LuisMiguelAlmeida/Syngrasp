@@ -49,7 +49,7 @@ savefig(titl{i});
 toc;
 save ws_obj_drawn;
 
-% Load pre computed images
+%% Load pre computed images
 load ws_obj_drawn; % Loads worspace
 
 %% opens figures pre-computed
