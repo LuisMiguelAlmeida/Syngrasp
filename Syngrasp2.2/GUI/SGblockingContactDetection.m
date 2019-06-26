@@ -21,121 +21,114 @@ iscp = 0;
 indexes = [];
 
 if (size(hand.cp,2) > 0)
-indexes = find(hand.cp(4,:) == finger);
+    indexes = find(hand.cp(4,:) == finger);
 
-for i=1:length(indexes)
+    for i=1:length(indexes)
 
-    if(hand.cp(5,indexes(i)) >= nqf)
-        iscp = 1;
+        if(hand.cp(5,indexes(i)) >= nqf)
+            iscp = 1;
+        end
     end
-end
 end
 q_start = hand.q(nq);
 q_final = new_q;
 
 if(iscp)
-    
     if((q_final >= q_start) || (nqf == 1)) %opening the finger or moving the abd/add joint
     
-    new_object = object;
-    new_hand = hand;
+        new_object = object;
+        new_hand = hand;
     
     else
-        
-    q = hand.q;
-    q(nq) = new_q;
+        q = hand.q;
+        q(nq) = new_q;
 
-    hand = SGmoveHand(hand,q);
+        hand = SGmoveHand(hand,q);
     
-    for i=1:length(indexes)
-    
-        hand = SGremoveContact(hand,hand.cp(4,indexes(i)),hand.cp(5,indexes(i)),hand.cp(6,indexes(i)));
-            
-    end
-    
-    new_cp = SGcontactDetection(hand,object,finger);
-    
-    for i = 1:size(new_cp,1)
-    
-        hand = SGaddContact(hand,1,finger,new_cp(i,1),new_cp(i,2));
-    end
-        
-    [new_hand,new_object] = SGcontact(hand,object);
+        for i=1:length(indexes)
+
+            hand = SGremoveContact(hand,hand.cp(4,indexes(i)),hand.cp(5,indexes(i)),hand.cp(6,indexes(i)));
+
+        end
+
+        new_cp = SGcontactDetection(hand,object,finger);
+
+        for i = 1:size(new_cp,1)
+
+            hand = SGaddContact(hand,1,finger,new_cp(i,1),new_cp(i,2));
+        end
+
+        [new_hand,new_object] = SGcontact(hand,object);
     end
     
     
     
 %no contact points    
 else
-    
     q = hand.q(nq);
-    if(new_q == q)
-       
+    if(new_q == q)       
         new_hand = hand;
         new_object = object;
        
     end
     
     if(new_q > q)
-    while (q < new_q)
-    
-    q = q + step;
-    q_tot = hand.q;
-    q_tot(nq) = q;
-    hand = SGmoveHand(hand,q_tot);
-    new_cp = SGcontactDetection(hand,object,finger);
-    tmp_cp = [];
-    
-    for i=1:size(new_cp,1)
+        while (q < new_q)
 
-        if(new_cp(i,1) >= nqf)
-            tmp_cp = [tmp_cp; new_cp(i,:)];
+            q = q + step;
+            q_tot = hand.q;
+            q_tot(nq) = q;
+            hand = SGmoveHand(hand,q_tot);
+            new_cp = SGcontactDetection(hand,object,finger);
+            tmp_cp = [];
+            for i=1:size(new_cp,1)
+
+                if(new_cp(i,1) >= nqf)
+                    tmp_cp = [tmp_cp; new_cp(i,:)];
+                end
+            end
+
+            new_cp = tmp_cp;
+
+            if (size(new_cp,1) == 1)
+                hand = SGaddContact(hand,1,finger,new_cp(1,1),new_cp(1,2));
+                [new_hand,new_object] = SGcontact(hand,object);
+                break;
+            else
+                new_hand = hand;
+                new_object = object;
+            end
+
         end
-    end
-    
-    new_cp = tmp_cp;
-
-    if (size(new_cp,1) == 1)
-    hand = SGaddContact(hand,1,finger,new_cp(1,1),new_cp(1,2));
-    [new_hand,new_object] = SGcontact(hand,object);
-    break;
-    else
-        new_hand = hand;
-        new_object = object;
-        
-    end
-    
-    end
     
     elseif(new_q < q)
-    while (q > new_q)
-    
-    q = q - step;
-    q_tot = hand.q;
-    q_tot(nq) = q;
-    hand = SGmoveHand(hand,q_tot);
-    new_cp = SGcontactDetection(hand,object,finger);
-    tmp_cp = [];
-    
-    for i=1:size(new_cp,1)
+        while (q > new_q)
+            q = q - step;
+            q_tot = hand.q;
+            q_tot(nq) = q;
+            hand = SGmoveHand(hand,q_tot);
+            new_cp = SGcontactDetection(hand,object,finger);
+            tmp_cp = [];
 
-        if(new_cp(i,1) >= nqf)
-            tmp_cp = [tmp_cp; new_cp(i,:)];
+            for i=1:size(new_cp,1)
+
+                if(new_cp(i,1) >= nqf)
+                    tmp_cp = [tmp_cp; new_cp(i,:)];
+                end
+            end
+
+            new_cp = tmp_cp;
+
+            if (size(new_cp,1) == 1)
+                hand = SGaddContact(hand,1,finger,new_cp(1,1),new_cp(1,2));
+                [new_hand,new_object] = SGcontact(hand,object);
+                break;
+            else
+                new_hand = hand;
+                new_object = object;
+            end
+
         end
-    end
-    
-    new_cp = tmp_cp;
-
-    if (size(new_cp,1) == 1)
-    hand = SGaddContact(hand,1,finger,new_cp(1,1),new_cp(1,2));
-    [new_hand,new_object] = SGcontact(hand,object);
-    break;
-    else
-        new_hand = hand;
-        new_object = object;
-    end
-    
-    end
     end
     
     
