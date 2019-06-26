@@ -1,19 +1,36 @@
-function [minus_PGR] = SGBestPosCost(hand,obj, center_obj, PGR_type)
-% This function evaluates the PGR given a certain hand, object and its
+function [minus_PGR] = SGBestPosCost(hand,obj, pos, rot ,  PGR_type)
+% This function evaluates the minus PGR given a certain hand, object and its
 % center coordinates
-    if nargin ~= 4
-        error('The number of inputs is 4!');
+    if nargin ~= 5
+        error('The number of inputs is 5!');
     end
-    obj.center(1:3) = center_obj; % Updates the object center
-    obj.Htr(1:3,4) = center_obj'; % Updates the object center in Htr matrix
-    % Creates a new sphere
-    obj = SGsphere(obj.Htr,obj.radius,obj.res);
-    % Close the hand
-    [hand, obj] = SGcloseHandWithSynergies(hand,obj,hand.step_syn, hand.n_syn);
+    obj.center(1:3) = pos; % Updates the object center
+    obj.Htr(1:3,4) =pos'; % Updates the object center in Htr matrix
     
-    if obj.radius - 5 > obj.center(3)
-        minus_PGR = 0;
-        return;
+    % Creates a new sphere
+    obj = SGrebuildObject(obj, obj.center,rot);
+    % Close the hand
+    [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,hand.step_syn, hand.n_syn);
+    
+    switch obj.type
+        case 'sph'
+            if obj.radius - 5 > obj.center(3)
+                minus_PGR = 0;
+                return;
+            end
+        case 'cube'
+            % Face 5 is the opposite of 6 (no common vertices)
+            % If some z coordinate of any vertex is bigger than -5, it is
+            % considered that the cube is "inside" of the palm
+            for i = 5:6
+                if sum(gt(-5,obj.faces.ver{1,i}(3,:))) > 0
+                     minus_PGR = 0;
+                     return;
+                end
+            end
+            
+        case 'cyl'
+            % TODO
     end
     
     switch PGR_type
