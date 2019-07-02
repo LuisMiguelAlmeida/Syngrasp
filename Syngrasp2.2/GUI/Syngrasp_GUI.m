@@ -441,12 +441,28 @@ switch handles.grasp_quality_panel
         case 'PGRbruteforce'
             s1=tic;
             [Quality, PCR, combopt] = SG_PGRbruteforce(hand, object);
-            e1= toc(s1)
+            output =sprintf('PGRbruteforce:\n Quality: %f\nComb: \n',Quality);
+            fprintf(output, 'cmd');
+            combopt
+            e_bf= toc(s1)
         case 'PGRh1' 
             [Quality, PCR, combopt] = SG_PGRh1(hand, object);
-        case 'PGRh2' 
+        case 'PGRh2'
+            s1=tic;
             kg=3; % Number of points that must be attached to the object
             [Quality, PCR, combopt]=SG_PGRh2(hand,object,kg);
+            output =sprintf('PGRh2:\n Quality: %f\nComb: \n',Quality);
+            fprintf(output, 'cmd');
+            combopt
+            e_h2 = toc(s1)
+        case 'PGRh3' 
+            s1=tic;
+            kg=3; % Number of points that must be attached to the object
+            [Quality, PCR, combopt]=SG_PGRh3(hand,object,kg);
+            output =sprintf('PGRh3:\n Quality: %f\nComb:\n',Quality);
+            fprintf(output, 'cmd');
+            combopt
+            e_h3 = toc(s1)
         case 'mev'
             disp('mev');
             Quality = SGmanipEllipsoidVolume(object.G,hand.J);
@@ -606,6 +622,8 @@ switch method_selected
         handles.grasp_quality_panel='PGRh1';
     case 'PGR Heuristic 2'
         handles.grasp_quality_panel='PGRh2';
+    case 'PGR Heuristic 3'
+        handles.grasp_quality_panel='PGRh3';
     case 'Manipolability Ellisoid Volume'
         handles.grasp_quality_panel='mev';
     case 'Grasp Isotropy Index'
