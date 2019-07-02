@@ -74,7 +74,7 @@ load('CubePos.mat');
 close all;
 rot = zeros(1,3);
 %%
-[PGR_BF, PGR_H2, xRot] = PGRwithRotVar(obj, obj.center, rot, 'xRot', 0.78, 11);
+[PGR_BF, PGR_H2, xRot] = PGRwithRotVar(obj, obj.center, rot, 'xRot',0.1, 17);
 
 figure();
 plot(xRot, PGR_BF);
@@ -88,7 +88,7 @@ bestRotX = xRot(I);
 
 %% Rotation around Y axis
 close all;
-[PGR_BF, PGR_H2, yRot] = PGRwithRotVar(obj, obj.center, rot, 'yRot', 0.78, 11);
+[PGR_BF, PGR_H2, yRot] = PGRwithRotVar(obj, obj.center, rot, 'yRot', 0.1, 17);
 figure();
 plot(yRot, PGR_BF);
 hold on;
@@ -101,7 +101,7 @@ bestRotY = yRot(I);
 
 %% Rotation around Z axis
 close all;
-[PGR_BF, PGR_H2, zRot] = PGRwithRotVar(obj, obj.center, rot, 'zRot', 0.78, 11);
+[PGR_BF, PGR_H2, zRot] = PGRwithRotVar(obj, obj.center, rot, 'zRot', 0.28, 20);
 figure();
 plot(zRot, PGR_BF);
 hold on;
