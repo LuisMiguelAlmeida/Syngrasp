@@ -14,6 +14,7 @@
 
 function [new_object] = SGrebuildObject(object, new_center, rot)
     H=eye(4);
+    H(1:3, 1:3) = object.Htr(1:3, 1:3);
     %translation = new_center - object.center; % Translation vector
     object.Htr = SGrotAndTransl(H,new_center, rot(1), rot(2), rot(3));
     

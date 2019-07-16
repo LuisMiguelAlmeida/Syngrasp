@@ -9,8 +9,13 @@ function [minus_PGR] = SGBestPosCost(hand,obj, pos, rot ,  PGR_type)
     
     % Creates a new sphere
     obj = SGrebuildObject(obj, obj.center,rot);
+    
     % Close the hand
-    [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,hand.step_syn, hand.n_syn);
+    if isfield(hand, 'step_syn') && isfield(hand, 'n_syn')
+        [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,hand.step_syn, hand.n_syn);
+    else
+       [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj);
+    end
     
     switch obj.type
         case 'sph'
