@@ -1,9 +1,7 @@
-%   SG_PGRh2 - evaluates the PGR and PCR quality measures for a
-%   given grasp using the heuristic 2 reported in the paper
-%   "On Grasp Quality Measures: Grasp Robustness and Contact Force 
-%   Distribution in Underactuated and Compliant Robotic Hands."
+%   SG_PGRh3 - evalates the PGR and PCR quality measures for a
+%   given grasp using the heuristic 3
 %
-%    Usage: [PGR PCR combopt]=SG_PGRh2(hand0,object0,kg)
+%    Usage: [PGR PCR combopt]=SG_PGRh3(hand0,object0,kg)
 %
 %    Arguments:
 %    hand0 = the hand structure in the initial grasp configuration
