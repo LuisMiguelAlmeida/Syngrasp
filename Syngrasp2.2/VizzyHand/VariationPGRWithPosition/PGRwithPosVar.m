@@ -56,8 +56,10 @@ for i = 1 : length(Pos)
     obj.center(axis) = Pos(i); % slithe a little the object position
     obj.Htr(axis,4) = Pos(i);
     obj = SGrebuildObject(obj, obj.center, rot); % Rebuilds a new object
+    
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
+    %save(['Sph4_', int2str(i)], 'hand', 'obj');
     % Quality metrics
     [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, num2str(Pos(i),4), 3,i);
     
