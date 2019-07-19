@@ -41,9 +41,8 @@ for isyn=1:15
     
     % Definition of the hand synergies
     [qm, Syn] = SGsantelloSynergies; % Load Santello's synergies
-    Syn = [zeros(1,size(Syn,2)); Syn]; % Adapt synergy matrix to take into account the wrist joint
     hand0 = SGdefineSynergies(hand0,Syn(:,1:isyn),qm);
-    hand0 = SGmoveHand(hand0,[0 qm]); 
+    hand0 = SGmoveHand(hand0,qm); 
     
     %nc0=size(hand0.cp,2); % initial number of contact points
 

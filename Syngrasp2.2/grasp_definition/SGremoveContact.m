@@ -54,9 +54,10 @@ function [new_hand, object] = SGremoveContact(hand,object,finger,link,alpha)
 new_hand = hand;
 index = 0;
 nc = size(hand.cp,2);
+
 for i=1:nc
     if(hand.cp(4,i) == finger && hand.cp(5,i) == link && hand.cp(6,i) == alpha)
-    index = i;
+        index = i;
     end
 end
 
