@@ -40,18 +40,24 @@ function [PGR, PCR, combopt] = SG_PGRh4(hand0,object0)
     % Number of Cnk combinations in State 1
     n_Cnk_St1 = size(Cnk_St1,1);
     
-    % Number of Cnk combinations in State 2
-    n_Cnk_St2 = (nchoosek(nc0-kg,2)+nchoosek(nc0-kg,3)); 
+    % Number of Cnk combinations in State 2    
+    if nc0 == 4
+        n_Cnk_St2 = nchoosek(nc0-kg,2);
+    else
+        n_Cnk_St2 = (nchoosek(nc0-kg,2)+nchoosek(nc0-kg,3));
+    end
     
     % Number of total possible combinations
     n_Cnk = n_Cnk_St1*n_Cnk_St2; 
     
     Comb = 3*ones(n_Cnk, nc0); % Pre-allocate memory  
     
+    % For each combination of State 1
     row = 1;
     for i = 1: n_Cnk_St1
         Comb(row:row + n_Cnk_St2-1, Cnk_St1(i,:)) = 1; 
         
+        % Exists another combinations for state 2
         ContactsLeft = setdiff(contacts, Cnk_St1(i,:));
         
         ContactsLeftSt2_2 = nchoosek(ContactsLeft,2);
@@ -60,12 +66,13 @@ function [PGR, PCR, combopt] = SG_PGRh4(hand0,object0)
           row = row + 1;
         end
         
-        ContactsLeftSt2_3 = nchoosek(ContactsLeft,3);
-        for j = 1: nchoosek(nc0-kg,3)
-          Comb(row,ContactsLeftSt2_3(j,:)) = 2;
-          row = row + 1;
+        if nc0 ~= 4
+            ContactsLeftSt2_3 = nchoosek(ContactsLeft,3);
+            for j = 1: nchoosek(nc0-kg,3)
+              Comb(row,ContactsLeftSt2_3(j,:)) = 2;
+              row = row + 1;
+            end
         end
-    
     end
         
     
