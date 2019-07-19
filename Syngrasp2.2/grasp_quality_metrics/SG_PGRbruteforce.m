@@ -75,12 +75,8 @@ function [PGR, PCR, combopt] = SG_PGRbruteforce(hand0, object0, Combination)
 %     wb = waitbar(0,'PGR Brute Force');
 
     parfor i = 1 : n_Comb
-        % Only updates a few times
-%         if mod(i,1000) == 0
-%             msg = sprintf('Computing PGR %d/%d',i,n_Comb);
-%             wb = waitbar(i/n_Comb,wb,msg); % waibar
-%         end
-        % Pre-allocating memory: Speeds problem
+
+        % Pre-allocating memory: Speed problem
         combination = ...
             struct('num', Comb(i,:),'nc',nc0,'hand',hand0,'object',object0,...
             'flag1',zeros(1,nc0),'flag2',zeros(1,nc0),'flag3',zeros(1,nc0));
@@ -157,9 +153,16 @@ function [PGR, PCR, combopt] = SG_PGRbruteforce(hand0, object0, Combination)
                 if kerKG == zeros(size(kerKG,1),1)
                     % Goes here if the combination satisfies the constraint ker(Ks*G') = 0
                     combination.object = SGcontactStiffness(combination.object,combination.K); % associate the global stiffness matrix to the object
-
-                    Gkr = combination.object.Kc*combination.object.G'*inv(combination.object.G*combination.object.Kc*combination.object.G');
-
+                    
+                    lastwarn('') % Clear last warning message
+                    
+                    Gkr = combination.object.Kc*combination.object.G'/(combination.object.G*combination.object.Kc*combination.object.G');
+                    
+                    [warnMsg, ~] = lastwarn;
+                    if ~isempty(warnMsg)
+                       continue;
+                    end
+                    
                     linMap = SGquasistaticMaps_PGR(combination.hand,combination.object); 
 
                     combination.E = ima(linMap.P); % basis for the controllable internal forces
