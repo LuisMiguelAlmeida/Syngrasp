@@ -1,4 +1,3 @@
-
 %    SGSyngrasp_GUI
 %    Graphic User Interface for SynGrasp (Synergy Grasping Toolbox)
 %    Copyright (c) 2013 J. Acquarelli,D. Conti,G. Gioioso
@@ -396,13 +395,21 @@ switch handles.hand.type
     case 'Modular'
         active= [1 1 1 1 1 1 1 1 1];
     case 'VizzyHand'
-        active= [1 1 1 1 1 1 1 1 1 1 1 1];
+        
+        active= 90*0.0087*[1 1 1]; % 0.5 º = 0.0087 rad
+        n_syn = 3;
+        
         
 end
 
 enableGUI(handles,false)
 handles.obj
-[handles.hand,handles.obj] = SGcloseHand(handles.hand,handles.obj,active,0.1);   
+
+if strcmp(handles.hand.type, 'VizzyHand')
+    [handles.hand,handles.obj] = SGcloseHandWithSynergiesV2(handles.hand,handles.obj, active, n_syn);  
+else
+    [handles.hand,handles.obj] = SGcloseHand(handles.hand,handles.obj,active,0.1); 
+end
 %handles.obj
 guidata(handles.output,handles);
 %refresh print
@@ -509,13 +516,17 @@ if(strcmp(obj_selected,'None')==0)
         rad=str2double(get(handles.obj_rad,'String'));
         height=str2double(get(handles.obj_height,'String'));
         side=str2double(get(handles.obj_side,'String'));
+       
 
         handles.obj_data.x=x;
         handles.obj_data.y=y;
         handles.obj_data.z=z;
         handles.obj_data.rotx=theta;
-        handles.obj_data.roty=phi;
+        handles.obj_data.roty=phi;        
         handles.obj_data.rotz=psi;
+        theta = deg2rad(theta);
+        phi = deg2rad(phi);
+        psi = deg2rad(psi);
         handles.obj_data.rad=rad;
         handles.obj_data.height=height;
         handles.obj_data.side=side;
@@ -2842,60 +2853,6 @@ function edit_plus_5_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
-end
-
-    
-
-
-% --- Executes on button press in GraspwithSynergies.
-function GraspwithSynergies_Callback(hObject, eventdata, handles)
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Star grasp closehand
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-disp (handles.hand.type)
-switch handles.hand.type
-    case 'Paradigmatic'
-        active=[0 1 1 0 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1 1 ]';
-    case '3Fingered'
-        active=[1 1 0 1 1 0 1 1]';
-    case 'DLR'
-        active=[0 1 1 0 0 1 1 1 0 1 1 1 0 1 1 1 0 1 1 1 ]';
-    case 'Modular'
-        active= [1 1 1 1 1 1 1 1 1];
-    case 'VizzyHand'
-        active= 90*0.0087*[1 1 1]; % 0.5 º = 0.0087 rad
-        n_syn = 3;
-        
-end
-
-enableGUI(handles,false)
-handles.obj 
-%[handles.hand,handles.obj] = SGcloseHandWithSynergies(handles.hand,handles.obj,active, n_syn);
-tic
-[handles.hand,handles.obj] = SGcloseHandWithSynergiesV2(handles.hand,handles.obj, active, 3);  
-toc
-handles.obj
-guidata(handles.output,handles);
-%refresh print
-SGGUIplothand(handles);
-handles.obj
-SGGUIplotobject (handles);
-updateAll(handles)
-
-set(findall(handles.uipanel1, '-property', 'enable'), 'enable', 'on');
-set(findall(handles.export3, '-property', 'enable'), 'enable', 'on');
-set(findall(handles.uipanel3, '-property', 'enable'), 'enable', 'on');
-set(findall(handles.uipanel2, '-property', 'enable'), 'enable', 'on');
-set(findall(handles.cp_panel, '-property', 'enable'), 'enable', 'on');
-set(findall(handles.grasp_panel, '-property', 'enable'), 'enable', 'on');
-if(~isfield(handles.obj,'G'))
-    set(findall(handles.button_quality, '-property', 'enable'), 'enable','off');
-end
-
-if (isempty(handles.hand.J))
-    set(findall(handles.uipanel14, '-property', 'enable'), 'enable', 'off');
-else
-    set(findall(handles.uipanel14, '-property', 'enable'), 'enable', 'on');
 end
 
 
