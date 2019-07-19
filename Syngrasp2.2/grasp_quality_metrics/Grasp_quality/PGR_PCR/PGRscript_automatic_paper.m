@@ -20,6 +20,9 @@ hand0=SGparadigmatic;
 % 1. Vector a of the positions of the contacts on the links:
  a=0.5*ones(1,15);
 
+% Define hand's configuration 
+
+
 % 2. Select the number of contact points
 disp('Select the number of contact points')
 type = input('(3,4,5,6,8,9,10,12,15):  ','s');
@@ -42,7 +45,7 @@ switch type
       hand0 = SGaddContact(hand0,1,5,4,a(15));
     case '6'
     % Define the contact points on the distal phalanges
-      hand0 = SGaddContact(hand0,1,1,3,a(6)); 
+      hand0 = SGaddContact(hand0,1 ,1,3,a(6)); 
       hand0 = SGaddContact(hand0,1,2,3,a(7)); 
       hand0 = SGaddContact(hand0,1,3,3,a(8));
     % Define the contact points on the fingertips
@@ -127,22 +130,36 @@ switch type
         error('wrong number of contact points');
 end
 
+[qm, Syn] = SGsantelloSynergies; % Load Santello's synergies
+hand0 = SGdefineSynergies(hand0,Syn(:,1:3),qm);
+hand0 = SGmoveHand(hand0,qm);
+
+[hand0, obj0] = SGmakeObject(hand0);
+SGplotHand(hand0);hold on;
+SGplotObject(obj0);
+
 disp('Select the desired type of computation')
-type = input('(brute_force, heuristic1, heuristic2):  ','s');
+type = input('(BF, H1, H2, H3, H4):  ','s');
 tic
 switch type
-    case 'brute_force'   
-        [PGR, PCR, combopt]=BruteForcePGR(hand0,a);
+    case 'BF'   
+        [PGR, PCR, combopt]=SG_PGRbruteforce(hand0,obj0);
         
-    case 'heuristic1'
+    case 'H1'
         disp('heuristic1');
-        [PGR, PCR, combopt]=Heuristic1PGR_paper(hand0,a);
+        [PGR, PCR, combopt]=SG_PGRh1(hand0,obj0);
         
-    case 'heuristic2'
+    case 'H2'
         disp('heuristic2');
-        kg=4;
-        [PGR, PCR, combopt]=Heuristic2PGR_paper(hand0,a,kg);
-        
+        kg=3;
+        [PGR, PCR, combopt]=SG_PGRh2(hand0,obj0,kg);
+    case 'H3'
+        disp('heuristic3');
+        kg=3;
+        [PGR, PCR, combopt]=SG_PGRh3(hand0,obj0,kg);
+    case 'H4'
+        disp('heuristic4');
+        [PGR, PCR, combopt]=SG_PGRh4(hand0,obj0);
     otherwise
         error('wrong type of computation');
 end
@@ -150,7 +167,9 @@ end
 % STORE SIMULATION TIME:
 sim_time=toc;
 
-% PLOTS
+
+
+%% PLOTS
 % PGR vs PCR log
 figure
 semilogy([1:15], PCR,'--',[1:15],PGR, 'LineWidth',3)
