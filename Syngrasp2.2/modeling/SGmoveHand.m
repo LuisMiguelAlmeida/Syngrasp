@@ -78,8 +78,8 @@ function newHand = SGmoveHand(hand,q)
         end
     
     end
-    
-	k = 2;
+    	%k = 1;
+	k = 2; % "Delete" wrist joint
 	for i=1:hand.n
         F_old = hand.F{i};
         DHpars = F_old.DHpars;
