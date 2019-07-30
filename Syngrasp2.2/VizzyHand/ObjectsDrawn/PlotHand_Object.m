@@ -7,7 +7,9 @@ tic;
 
 load('LargeDiameter.mat');
 titl{i} = 'Large Diameter'; % titl{i}e
-[PCR(i),PGR_BF(i), PGR_H1(i), PGR_H2(i)] = Plot1Hand_Object(hand, obj, titl{i}, 3);
+PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'PCR', 'BF','H1', 'H2');
+Plot1Hand_ObjectWithPGR(hand, obj, titl{i}, PGR(i));
+
 savefig(titl{i});
 i = i+1;
 figure();
@@ -16,7 +18,8 @@ toc; % 15675.427317 seg
 tic;
 load('SmallDiameter.mat');
 titl{i} = 'Small Diameter'; % titl{i}e
-[PCR(i),PGR_BF(i), PGR_H1(i), PGR_H2(i)] = Plot1Hand_Object(hand, obj, titl{i}, 3);
+PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'PCR', 'BF','H1', 'H2');
+Plot1Hand_ObjectWithPGR(hand, obj, titl{i}, PGR(i));
 savefig(titl{i});
 i = i+1;
 figure();
@@ -24,7 +27,8 @@ figure();
 % Palmar Grasp
 load('Palmar.mat');
 titl{i} = 'Palmar'; 
-[PCR(i),PGR_BF(i), PGR_H1(i), PGR_H2(i)] = Plot1Hand_Object(hand, obj, titl{i}, 3);
+PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'PCR', 'BF','H1', 'H2');
+Plot1Hand_ObjectWithPGR(hand, obj, titl{i}, PGR(i));
 savefig(titl{i});
 i = i+1;
 figure();
@@ -34,7 +38,8 @@ toc;
 tic;
 load('PrecisionDisk.mat');
 titl{i} = 'Precision Disk'; % titl{i}e
-[PCR(i),PGR_BF(i), PGR_H1(i), PGR_H2(i)] = Plot1Hand_Object(hand, obj, titl{i}, 3);
+PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'PCR', 'BF','H1', 'H2');
+Plot1Hand_ObjectWithPGR(hand, obj, titl{i}, PGR(i));
 savefig(titl{i});
 i = i+1;
 figure();
@@ -44,7 +49,8 @@ toc;
 tic;
 load('PowerDisk.mat');
 titl{i} = 'Power Disk'; % titl{i}e
-[PCR(i),PGR_BF(i), PGR_H1(i), PGR_H2(i)] = Plot1Hand_Object(hand, obj, titl{i}, 3);
+PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'PCR', 'BF','H1', 'H2');
+Plot1Hand_ObjectWithPGR(hand, obj, titl{i}, PGR(i));
 savefig(titl{i});
 toc;
 save ws_obj_drawn;
