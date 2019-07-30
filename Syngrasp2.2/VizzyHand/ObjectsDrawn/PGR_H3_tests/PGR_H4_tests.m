@@ -56,20 +56,20 @@ close all;
 load('ws_H3_tests.mat');
 load('ws_H4_tests.mat');
 
-plot([PGR_BF.time]); hold on;
-plot([PGR_H2.time]); hold on;
-plot([PGR_H3.time]); hold on;
-plot([PGR_H4.time]);
+plot([PGR_BF.quality],'s','MarkerSize', 10); hold on;
+plot([PGR_H2.quality],'x','MarkerSize', 10); hold on;
+plot([PGR_H3.quality],'o','MarkerSize', 10); hold on;
+plot([PGR_H4.quality],'+','MarkerSize', 10);
 xlabel('Grasp Number')
-ylabel('Time (s)')
+ylabel('PGR')
 legend('BF', 'H2', 'H3', 'H4');
 
 figure();
 
-plot(log10([PGR_BF.time])); hold on;
-plot(log10([PGR_H2.time])); hold on;
-plot(log10([PGR_H3.time])); hold on;
-plot(log10([PGR_H4.time]));
+semilogy([PGR_BF.time],'s','MarkerSize', 10); hold on;
+semilogy([PGR_H2.time],'x','MarkerSize', 10); hold on;
+semilogy([PGR_H3.time],'o','MarkerSize', 10); hold on;
+semilogy([PGR_H4.time],'+','MarkerSize', 10);
 xlabel('Grasp Number')
 ylabel('Time')
 legend('BF', 'H2', 'H3', 'H4');
