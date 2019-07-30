@@ -470,6 +470,13 @@ switch handles.grasp_quality_panel
             fprintf(output, 'cmd');
             combopt
             e_h3 = toc(s1)
+        case 'PGRh4' 
+            s1=tic;
+            [Quality, PCR, combopt]=SG_PGRh4(hand,object);
+            output =sprintf('PGRh4:\n Quality: %f\nComb:\n',Quality);
+            fprintf(output, 'cmd');
+            combopt
+            e_h3 = toc(s1)
         case 'mev'
             disp('mev');
             Quality = SGmanipEllipsoidVolume(object.G,hand.J);
@@ -635,6 +642,8 @@ switch method_selected
         handles.grasp_quality_panel='PGRh2';
     case 'PGR Heuristic 3'
         handles.grasp_quality_panel='PGRh3';
+    case 'PGR Heuristic 4'
+        handles.grasp_quality_panel='PGRh4';
     case 'Manipolability Ellisoid Volume'
         handles.grasp_quality_panel='mev';
     case 'Grasp Isotropy Index'
