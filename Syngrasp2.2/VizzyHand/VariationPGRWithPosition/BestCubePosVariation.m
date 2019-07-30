@@ -51,19 +51,19 @@ end
 
 %%
 function [bestPosCoor, varargout] = bestPos(obj, posCoor, n_iter)
-    [PGR_BF, PGR_H2, Pos] = PGRwithPosVar(obj, obj.center, [0, 0, 0], [posCoor,'Pos'], 10, n_iter);
+    [PGR, Pos] = PGRwithPosVar(obj, obj.center, [0, 0, 0], [posCoor,'Pos'], 10, n_iter, ["BF", "H2"]);
     figure();
-    plot(Pos, PGR_BF);
+    plot(Pos, [PGR.BF]);
     hold on;
-    plot(Pos, PGR_H2);
+    plot(Pos, [PGR.H2]);
     xlabel([posCoor,' object position']);
     ylabel('Quality metric');
     legend( 'Brute Force', 'H2'); 
-    [~,I] = max(PGR_BF);
+    [~,I] = max([PGR.BF]);
     bestPosCoor = Pos(I);
     
-    varargout{1} = PGR_BF;
-    varargout{2} = PGR_H2;
+    varargout{1} = [PGR.BF];
+    varargout{2} = [PGR.H2];
     varargout{3} = Pos;
 end
 

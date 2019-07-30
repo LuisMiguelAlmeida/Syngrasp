@@ -4,7 +4,7 @@
 
 
 %% Variation for X axis
-clear PGR_BF PGR_H2;
+clear PGR;
 close all;
 clc;
 
@@ -37,23 +37,24 @@ for i = 1 : length(xPos)
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
     % Quality metrics
-    [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, int2str(xPos(i)), 3,i);
+    PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'BF', 'H2');
+    Plot1Hand_ObjectWithPGR(hand, obj, int2str(xPos(i)), PGR(i), i);
     
 end
 
 delete(wb); % Deletes waitbar
 figure();
-plot(xPos, PGR_BF);
+plot(xPos, [PGR.BF]);
 hold on;
-plot(xPos, PGR_H2);
+plot(xPos, [PGR.H2]);
 xlabel('X object postion');
 ylabel('Quality metric');
 legend( 'Brute Force', 'H2'); 
-[M, I] = max(PGR_BF);
+[M, I] = max([PGR.BF]);
 bestX = xPos(I);
 
 %% Variation for Y axis
-clear PGR_BF PGR_H2;
+clear PGR;
 close all;
 clc
 
@@ -85,23 +86,24 @@ for i = 1 : length(yPos)
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
     % Quality metrics
-    [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, int2str(yPos(i)), 3,i);
+    PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'BF', 'H2');
+    Plot1Hand_ObjectWithPGR(hand, obj, int2str(yPos(i)), PGR(i), i);
     
 end
 
 delete(wb); % Deletes waitbar
 
-plot(yPos, PGR_BF);
+plot(yPos, [PGR.BF]);
 hold on;
-plot(yPos, PGR_H2);
+plot(yPos, [PGR.H2]);
 xlabel('Y object postion');
 ylabel('Quality metric');
 legend( 'Brute Force', 'H2'); 
-[M, I] = max(PGR_BF);
+[M, I] = max([PGR.BF]);
 bestY = yPos(I);
 
 %% Variation for Z axis
-clear PGR_BF PGR_H2;
+clear PGR;
 close all;
 clc
 
@@ -133,20 +135,21 @@ for i = 1 : length(zPos)
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
     % Quality metrics
-    [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, int2str(zPos(i)), 3,i);
+    PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'BF', 'H2');
+    Plot1Hand_ObjectWithPGR(hand, obj, int2str(zPos(i)), PGR(i), i);
 
 end
 
 delete(wb); % Deletes waitbar
 figure();
-plot(zPos, PGR_BF);
+plot(zPos, [PGR.BF]);
 hold on;
-plot(zPos, PGR_H2);
+plot(zPos, [PGR.H2]);
 xlabel('Z object postion');
 ylabel('Quality metric');
 legend( 'Brute Force', 'H2'); 
 
-[M, I] = max(PGR_BF);
+[M, I] = max([PGR.BF]);
 bestZ = zPos(I);
 
 %% Best of all combinations (supposedly)
@@ -164,7 +167,8 @@ obj=SGsphere(obj.Htr,obj.radius,obj.res); % Creates a new sphere
 [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
 figure;
 % Quality metrics
-[~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, int2str(zPos(i)), 3);
+PGR = ComputePGRWithBFandHeur(hand, obj, 'BF', 'H2');
+Plot1Hand_ObjectWithPGR(hand, obj, int2str(zPos(i)), PGR);
 
 %% Makes a search for the best sphere's center point through fminsearch
 
@@ -239,7 +243,7 @@ zlabel('Z');
 %
 %
 %% Variation for X axis
-clear PGR_BF PGR_H2;
+clear PGR;
 close all;
 clc;
 
@@ -275,23 +279,24 @@ for i = 1 : length(xPos)
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
     % Quality metrics
-    [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, int2str(xPos(i)), 3,i);
+    PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'BF', 'H2');
+    Plot1Hand_ObjectWithPGR(hand, obj, int2str(xPos(i)), PGR(i),i);
     
 end
 
 delete(wb); % Deletes waitbar
 figure();
-plot(xPos, PGR_BF);
+plot(xPos, [PGR.BF]);
 hold on;
-plot(xPos, PGR_H2);
+plot(xPos, [PGR.H2]);
 xlabel('X object postion');
 ylabel('Quality metric');
 legend( 'Brute Force', 'H2'); 
-[M, I] = max(PGR_BF);
+[M, I] = max([PGR.BF]);
 bestX = xPos(I);
 
 %% Variation for Y axis
-clear PGR_BF PGR_H2;
+clear PGR;
 close all;
 clc
 
@@ -327,24 +332,25 @@ for i = 1 : length(yPos)
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
     % Quality metrics
-    [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, int2str(yPos(i)), 3,i);
+    PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'BF', 'H2');
+    Plot1Hand_ObjectWithPGR(hand, obj, int2str(yPos(i)), PGR(i),i);
     
 end
 
 delete(wb); % Deletes waitbar
 
-plot(yPos, PGR_BF);
+plot(yPos, [PGR.BF]);
 hold on;
-plot(yPos, PGR_H2);
+plot(yPos, [PGR.H2]);
 xlabel('Y object postion');
 ylabel('Quality metric');
 legend( 'Brute Force', 'H2'); 
-[M, I] = max(PGR_BF);
+[M, I] = max([PGR.BF]);
 bestY = yPos(I);
 
 
 %% Variation for Z axis
-clear PGR_BF PGR_H2;
+clear PGR;
 close all;
 clc
 
@@ -380,18 +386,19 @@ for i = 1 : length(zPos)
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
     % Quality metrics
-    [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, int2str(zPos(i)), 3,i);
+    PGR(i) = ComputePGRWithBFandHeur(hand, obj, 'BF', 'H2');
+    Plot1Hand_ObjectWithPGR(hand, obj, int2str(zPos(i)), PGR(i),i);
 
 end
 
 delete(wb); % Deletes waitbar
 figure();
-plot(zPos, PGR_BF);
+plot(zPos, [PGR.BF]);
 hold on;
-plot(zPos, PGR_H2);
+plot(zPos, [PGR.H2]);
 xlabel('Z object postion');
 ylabel('Quality metric');
 legend( 'Brute Force', 'H2'); 
 
-[M, I] = max(PGR_BF);
+[M, I] = max([PGR.BF]);
 bestZ = zPos(I);
