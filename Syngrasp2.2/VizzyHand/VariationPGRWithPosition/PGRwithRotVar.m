@@ -3,7 +3,7 @@
 %   The rotation around a certain axis can be defined in the variable
 %   "axisVar".
 %
-%    Usage: [PGR_BF, PGR_H2] = PGRwithRotVar(obj0, center, rot,axisVar, maxVar, n_iter)
+%    Usage: [PGR] = PGRwithRotVar(obj0, center, rot,axisVar, maxVar, n_iter, PGRtypes)
 %    Arguments:
 %    obj0 = the object structure in the initial grasp configuration
 %    center = object center
@@ -14,13 +14,15 @@
 %    axisVar = string that defines the axis where the Rotition changes
 %    maxVar = center maximum variation in one axis direction
 %    n_iter = is the integer of (number of total Rotitions -1)/2
+%    PGRtypes = string array containing the method of how PGR should be
+%    computed. ( By brute force, heuristic 1,2,3,4 ...) Example: PGRtypes = ["BF", "H2"];
 %
 %    Returns:
-%    PGR_BF = PGR brute force
-%    PGR_H2 = PGR Heuristic 2
-%    Rot = Vector that contains the Rottion variation
+%    PGR = PGR structure that contains PGR computed by the different
+%    methods specified in PGRtypes
+%    Rot = Vector that contains the rotation variation
 
-function [PGR_BF, PGR_H2, Rot] = PGRwithRotVar(obj0, center, rot, axisVar, maxVar, n_iter)
+function [PGR, Rot] = PGRwithRotVar(obj0, center, rot, axisVar, maxVar, n_iter,PGRtypes)
 
 switch axisVar
     case 'xRot'
@@ -43,11 +45,12 @@ maxRot = rot(axis)+ maxVar; % maxRot that obj center can have
 
 Rot = minRot: maxVar/n_iter : maxRot; % Vector with Rotition
 
-%Rot = round(Rot, 4);
 % Pre-allocate memory
-PGR_BF = zeros(1, length(Rot));
-PGR_H2 = zeros(1, length(Rot));
-n_cp =  zeros(1, length(Rot));
+for i = 1: length(PGRtypes)
+    auxPGR.(PGRtypes(i)) = 0;
+end
+PGR(1:length(Rot))= auxPGR;
+
 
 wb = waitbar(0,'PGR Var with Rot Var');
 for i = 1 : length(Rot)
@@ -68,19 +71,15 @@ for i = 1 : length(Rot)
     end
     rot(axis) = Rot(i); % Updates rotation
     obj = SGrebuildObject(obj, obj.center, rot); % Rebuilds a new object
-    if i == 18
-        disp('hi')
-    end
+
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
-    %[hand, obj] = SGcloseHandWithSynergies(hand,obj);
+
     % Quality metrics
-    [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, num2str(Rot(i),4), 3,i);
-    hold off;
-    n_cp(i)= size(hand.cp,2);
+    PGR(i) = ComputePGRWithBFandHeur(hand, obj, PGRtypes);
+    %Plot1Hand_ObjectWithPGR(hand, obj, 'None', PGR(i),i);
 end
 
 delete(wb); % Deletes waitbar
-figure();
-plot(Rot, n_cp);
+
 end

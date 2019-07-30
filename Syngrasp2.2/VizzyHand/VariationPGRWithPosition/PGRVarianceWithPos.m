@@ -10,13 +10,13 @@ maxVar = 10; % 5mm
 
 %% For X position
 posCoor = 'x';
-XaxisGrasps = ComputeVariance4eachAxis(grasps, posCoor, maxVar, n_iter);
+XaxisGrasps = ComputePosVariance4eachGrasp(grasps, posCoor, maxVar, n_iter,'man');
 
-save('GraspsPosVariance.mat','XPosaxisGrasps','-append'); 
+%save('GraspsPosVariance.mat','XPosaxisGrasps','-append'); 
 
 %% For Y position
 posCoor = 'y';
-YaxisGrasps = ComputeVariance4eachAxis(grasps, posCoor, maxVar, n_iter);
+YaxisGrasps = ComputePosVariance4eachGrasp(grasps, posCoor, maxVar, n_iter,'man');
 
 save('GraspsPosVariance.mat','YPosaxisGrasps','-append'); 
 
@@ -51,43 +51,21 @@ function InitialPGRvsPosVar(PosaxisGrasps, axis)
     
 end
 
-
-
 %%
-function axisGrasps = ComputeVariance4eachAxis(grasps, posCoor, maxVar, n_iter)
-  
+% Given an initial grasp, this fuction computes the PGR for a given
+% variance in X or Y axis
+function axisGrasps = ComputePosVariance4eachGrasp(grasps, posCoor, maxVar, n_iter, mode)
+
     n_grasps = length(grasps); % Number of grasps
 
     for i = 1:n_grasps
         close all;
         load(grasps(i).name); % In each cycle, loads one grasp
-        % Compute PGR for each position variance
-        [PGR_BF, PGR_H2, Pos] = PGRwithPosVar(obj, obj.center, [0, 0, 0], [posCoor,'Pos'], maxVar, n_iter);
-        f=figure();
-        plot(Pos, PGR_BF);
-        hold on;
-        plot(Pos, PGR_H2);
-        xlabel([posCoor,' object position']);
-        ylabel('Quality metric');
-        legend( 'Brute Force', 'H2');
-
-        % Choose two points from the plot to compute the PGR variance
-        d = datacursormode(f);
-        input('Put 2 datatips to limit the samples that will be used to compute the variance\n');
-        vals = getCursorInfo(d);
-        ind1 = min(vals.DataIndex);
-        ind2 = max(vals.DataIndex);
-        % Saves quality measures
-        axisGrasps(i).PGR_BF = PGR_BF;
-        axisGrasps(i).PGR_H2 =  PGR_H2;
-        axisGrasps(i).Pos = Pos;
-        axisGrasps(i).Variance = var(PGR_BF(ind1:ind2));
-        axisGrasps(i).Mean = mean(PGR_BF(ind1:ind2));
-        axisGrasps(i).ind1 = ind1;
-        axisGrasps(i).ind2 = ind2;
-        axisGrasps(i).Pos1 = Pos(ind1);
-        axisGrasps(i).Pos2 = Pos(ind2);
+        
+        axisGrasps = ComputePosVariance41Axis(obj, posCoor, maxVar, n_iter, mode);
     end
 end
+
+
 
 

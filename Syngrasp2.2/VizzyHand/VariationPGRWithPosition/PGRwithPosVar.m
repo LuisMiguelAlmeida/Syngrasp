@@ -3,7 +3,7 @@
 %   The coordinate can be defined in the variable "axisVar"
 %   choosen.
 %
-%    Usage: [PGR_BF, PGR_H2] = PGRwithPosVar(obj0, center, rot,axisVar, maxVar, n_iter)
+%    Usage: [PGR] = PGRwithPosVar(obj0, center, rot,axisVar, maxVar, n_iter,PGRtypes)
 %    Arguments:
 %    obj0 = the object structure in the initial grasp configuration
 %    center = object center
@@ -14,13 +14,15 @@
 %    axisVar = string that defines the axis where the position changes
 %    maxVar = center maximum variation in one axis direction
 %    n_iter = is the integer of (number of total positions -1)/2
+%    PGRtypes = string array containing the method of how PGR should be
+%    computed. ( By brute force, heuristic 1,2,3,4 ...) Example: PGRtypes = ["BF", "H2"];
 %
 %    Returns:
-%    PGR_BF = PGR brute force
-%    PGR_H2 = PGR Heuristic 2
+%    PGR = PGR structure that contains PGR computed by the different
+%    methods specified in PGRtypes
 %    Pos = Vector that contains the postion variation
 
-function [PGR_BF, PGR_H2, Pos] = PGRwithPosVar(obj0, center, rot, axisVar, maxVar, n_iter)
+function [PGR, Pos] = PGRwithPosVar(obj0, center, rot, axisVar, maxVar, n_iter, PGRtypes)
 
 switch axisVar
     case 'xPos'
@@ -44,8 +46,10 @@ maxPos = center(axis)+ maxVar; % maxPos that obj center can have
 Pos = minPos: maxVar/n_iter : maxPos; % Vector with position
 
 % Pre-allocate memory
-PGR_BF = zeros(1, length(Pos));
-PGR_H2 = zeros(1, length(Pos));
+for i = 1: length(PGRtypes)
+    auxPGR.(PGRtypes(i)) = 0;
+end
+PGR(1:length(Pos))= auxPGR;
 
 wb = waitbar(0,'PGR Var with Pos Var');
 for i = 1 : length(Pos)
@@ -59,10 +63,11 @@ for i = 1 : length(Pos)
     
     % Close the hand
     [hand, obj] = SGcloseHandWithSynergiesV2(hand,obj,active, n_syn);
-    %save(['Sph4_', int2str(i)], 'hand', 'obj');
-    % Quality metrics
-    [~,PGR_BF(i),~, PGR_H2(i)] = Plot1Hand_Object(hand, obj, num2str(Pos(i),4), 3,i);
     
+    % Quality metrics
+    PGR(i) = ComputePGRWithBFandHeur(hand, obj, PGRtypes);
+    %Plot1Hand_ObjectWithPGR(hand, obj, num2str(Pos(i),4), PGR,i); % <--DEGUB !!
+
 end
 
 delete(wb); % Deletes waitbar

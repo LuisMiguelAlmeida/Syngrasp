@@ -2,7 +2,7 @@
 % a little bit
 close all; clear;
 % loads a few initial grasps
-grasps = dir('CubePos_InitGrasps/*.mat');
+grasps = dir('CubeRot_InitGrasps/*.mat');
 
 
 n_iter = 17;
@@ -72,32 +72,8 @@ function axisGrasps = ComputeVariance4eachRotAxis(grasps, rotCoor, maxVar, n_ite
     for i = 1:n_grasps
         close all;
         load(grasps(i).name); % In each cycle, loads one grasp
-        % Compute PGR for each position variance
-        [PGR_BF, PGR_H2, Rot] = PGRwithRotVar(obj, obj.center, rot, [rotCoor,'Rot'], maxVar, n_iter);
-        f=figure();
-        plot(Rot, PGR_BF);
-        hold on;
-        plot(Rot, PGR_H2);
-        xlabel([rotCoor,' object Rotation']);
-        ylabel('Quality metric');
-        legend( 'Brute Force', 'H2');
-
-        % Choose two points from the plot to compute the PGR variance
-        d = datacursormode(f);
-        input('Put 2 datatips to limit the samples that will be used to compute the variance\n');
-        vals = getCursorInfo(d);
-        ind1 = min(vals.DataIndex);
-        ind2 = max(vals.DataIndex);
-        % Saves quality measures
-        axisGrasps(i).PGR_BF = PGR_BF;
-        axisGrasps(i).PGR_H2 =  PGR_H2;
-        axisGrasps(i).Rot = Rot;
-        axisGrasps(i).Variance = var(PGR_BF(ind1:ind2));
-        axisGrasps(i).Mean = mean(PGR_BF(ind1:ind2));
-        axisGrasps(i).ind1 = ind1;
-        axisGrasps(i).ind2 = ind2;
-        axisGrasps(i).Rot1 = Rot(ind1);
-        axisGrasps(i).Rot2 = Rot(ind2);
+        
+        axisGrasps(i)= ComputeRotVariance41Axis(obj, rotCoor, maxVar, n_iter, 'auto');
     end
 end
 
