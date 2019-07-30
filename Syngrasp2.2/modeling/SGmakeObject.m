@@ -113,6 +113,7 @@ function [newHand,object] = SGmakeObject(hand,center,normals)
     object.type = 'auto';
     newHand.H = object.H;
     newHand.Jtilde = SGjacobianMatrixV2(newHand);
+    %newHand.Jtilde = SGjacobianMatrix(newHand);
     newHand.J = newHand.H * newHand.Jtilde;
     newHand.JS = newHand.J * newHand.S;
 end

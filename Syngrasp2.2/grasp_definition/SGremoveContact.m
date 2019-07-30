@@ -64,5 +64,6 @@ end
 new_hand.cp = [hand.cp(:,1:index-1) hand.cp(:,index+1:nc)];
 object.normals = [object.normals(:,1:index-1) object.normals(:,index+1:nc)];
 object.cp = [object.cp(:,1:index-1) object.cp(:,index+1:nc)];
+%newHand.Jtilde = SGjacobianMatrix(hand);
 newHand.Jtilde = SGjacobianMatrixV2(hand);
 

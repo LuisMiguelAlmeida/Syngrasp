@@ -131,6 +131,7 @@ function newHand = SGaddContact(hand,type,cwhere,link,alpha)
     end
        
     newHand.Jtilde = SGjacobianMatrixV2(newHand);
+    %newHand.Jtilde = SGjacobianMatrix(newHand);
     
  
     
