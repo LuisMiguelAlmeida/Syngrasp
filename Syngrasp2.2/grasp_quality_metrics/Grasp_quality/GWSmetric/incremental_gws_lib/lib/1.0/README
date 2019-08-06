@@ -1,0 +1,41 @@
+Incremental Grasp Wrench Space Library
+**************************************
+
+Grasp quality (largest minimum resisted wrench) computation based on incrementally constructed grasp wrench space. The implementation is based on [1] with few modifications.
+
+[1] Borst, Ch, Max Fischer, and Gerd Hirzinger. "A fast and robust grasp planner for arbitrary 3D objects." Robotics and Automation, 1999. Proceedings. 1999 IEEE International Conference on. Vol. 3. IEEE, 1999.
+
+Description:
+------------
+The grasp wrench space (GWS) is first constructed by considering only a minimum number of primitive wrenches i.e. by discretization of the nonlinear friction cone. The direction of the weakest facet is found for this GWS. Then, new primitive wrenches that can maximize the GWS in the weakest directions are found from the edges of the original nonlinear friction cone. These new wrenches are added to the respective contact primitive wrench set and the GWS is again constructed. This process continues iteratively until a stopping criteria is met. Please read [1] for a complete understanding.
+
+Modifications compared to [1]:
+------------------------------
+Actuation matrix for incremental GWS with Minkowski sum of wrenches: Since some contacts are under actuated, not every contact primitive wrench set have to be considered for the Minkowski sum calculation. Primitive wrench sets of the contacts that are actuated by the same actuator are combined with union operation. Minkowski sum is computed only for the primitive wrench sets of each actuator. This is done to provide the respective physical meaning to the underactuated and actuated contacts. It also reduces the number of wrenches considered for the convex hull computation and thereby saving time (especially in the case Minkowski sum calculation).  
+
+Incremental GWS with Minkowski Sum of wrenches: In the case of incrementally constructing the GWS from the Minkowski sum of the wrenches, to find the primitive wrenches that constitute to the weakest direction in each iteration, instead of using the GWS based on the Minkowski sum of wrenches, the GWS based on the union of the wrenches is used. Finally, after the stopping criteria is met, the final GWS is again constructed but this time from the Minkowski sum of the wrenches itself. This is done to avoid the costly convex hull computation over the Minkowski sum of wrenches in every iteration and do it only once at the end. Moreover, a numerical analysis of the results before and after this modification show that the change in the grasp quality is very minimal and still saves almost more than half the total time required.
+
+Stopping criteria: In order to accommodate more number of contacts (i.e. power grasp with 10-12 contacts from a underactuated five fingered hand), the stopping criteria is fixed to be five iterations instead of stopping by monitoring the change in the grasp quality. This has been decided after some initial numerical analysis made on a number of grasps and comparing the result with a baseline. The reason for this stopping criteria is also partly due to the difficulty in finding a good general grasp quality change threshold that can be used across all grasps.
+
+Also, with this library, there is a possiblitly to define different normal force, friction, and friction cone discretization factor for each contact.
+
+Functionalities Provided:
+-------------------------
+a. calculate_union_gws() - Returns the grasp quality based on the GWS constructed from the union of the primitive wrenches and the total time taken
+b. calculate_minkowski_gws() - Returns the grasp quality based on the GWS constructed from the Minkowski sum of the primitive wrenches and the total time taken
+c. calculate_union_incremental_gws() - Returns the grasp quality based on the GWS constructed incrementally from the union of the primitive wrenches and the total time taken
+d. calculate_minkowski_incremental_gws() - Returns the grasp quality based on the GWS constructed incrementally from the Minkowski sum of the primitive wrenches and the total time taken
+
+Source Code and Shared Library:
+-------------------------------
+The source code is written in Python with dependencies on scipy, numpy and matplotlib. The shared library is created using cython. The shared library can be used from a python script or module. The path to the shared library has to be added to the PYTHONPATH variable to import the module.
+
+The shared library is created and tested on 64 bit Ubuntu 12.04 (x86_64) with Python(2.7.10), Numpy(1.9.2), Scipy(0.15.1), Matplotlib(1.4.3).
+The shared library is also created and tested on 32 bit SUSE 11.3 (i686) with Python(2.6.9), Numpy(1.10.4), Scipy(0.16.1), Matplotlib(1.3.1).
+
+Minimum required version: Python(2.3), Scipy(0.12.0). Ideally there should only be a warning but no problem in using the library with any version above the minimum requirement. 
+
+Examples:
+---------
+Example script to use the shared library is provied in the 'examples' folder. The example script also explains the set of arguments required to be passed and how to call different functionalities. Run this script in a python console to see the different outputs.
+

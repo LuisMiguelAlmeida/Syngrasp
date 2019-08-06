@@ -2,7 +2,7 @@ clc
 
 disp('SynGrasp installation')
 
-parpool; % Starts a parallel pool
+%parpool; % Starts a parallel pool
 
 addpath(genpath(pwd))
 
