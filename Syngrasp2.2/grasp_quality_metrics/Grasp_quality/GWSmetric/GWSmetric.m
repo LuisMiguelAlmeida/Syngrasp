@@ -1,19 +1,8 @@
 function GWS_dic = GWSmetric(hand,obj, method)
     if nargin == 2
-        %method = "Inc_minkowski";
-        method = "minkowski";
+        method = "Inc_minkowski";
+        %method = "minkowski";
     end
-
-    % We have to add the current MATLAB path to the Python path,
-    % so Python can be able to find GWS module.
-    if count(py.sys.path,'incremental_gws_lib/lib/1.0/examples') == 0
-        insert(py.sys.path,int32(0),'incremental_gws_lib/lib/1.0/examples');
-    end
-    if count(py.sys.path,'incremental_gws_lib/lib/1.0/x86_64') == 0
-        insert(py.sys.path,int32(0),'incremental_gws_lib/lib/1.0/x86_64');
-    end
-    
-    py.importlib.import_module('incremental_gws_calculation'); % Adding library
     
     n_cp = size(hand.cp,2); % Number of contact points
     
@@ -62,5 +51,11 @@ function GWS_dic = GWSmetric(hand,obj, method)
     
     % Calling GWS python function
     GWS_dic = py.gws.GWS(input_dict);
+    
+    % Return only the GWS Incremental minkowski sum quality measure
+    if nargin == 2
+        GWS_dic = GWS_dic{'Inc_minkowski'};
+    end
+    
 end
 
