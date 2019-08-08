@@ -477,6 +477,9 @@ switch handles.grasp_quality_panel
             fprintf(output, 'cmd');
             combopt
             e_h3 = toc(s1)
+        case 'GWSIncMinkUnderHands'
+            disp('GWSIncMinkUnderHands')    
+            Quality = GWSmetric(hand,object);
         case 'mev'
             disp('mev');
             Quality = SGmanipEllipsoidVolume(object.G,hand.J);
@@ -644,6 +647,8 @@ switch method_selected
         handles.grasp_quality_panel='PGRh3';
     case 'PGR Heuristic 4'
         handles.grasp_quality_panel='PGRh4';
+    case 'GWS Inc_Minkowski Underactuated Hands'
+        handles.grasp_quality_panel='GWSIncMinkUnderHands';
     case 'Manipolability Ellisoid Volume'
         handles.grasp_quality_panel='mev';
     case 'Grasp Isotropy Index'
